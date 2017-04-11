@@ -85,6 +85,21 @@ public class DbHelper extends SQLiteOpenHelper {
         return c;
     }
 
+    public Cursor getDatosNotificacion() {
+
+        String columnas [] = {Vacunas.CN_ID, Vacunas.CN_FECHA};
+        Cursor c = db.rawQuery("Select _id,fecha,vacuna,CAST(ROUND((julianday(fecha) - julianday('now'))) AS INTEGER) from vacunas",null);
+        if (c.moveToFirst()) {
+            do {
+                Vacunas p = new Vacunas();
+                p.setId(c.getInt(0));
+                p.setFecha(c.getString(1));
+                p.setVacuna(c.getString(2));
+            } while (c.moveToNext());
+        }
+        return c;
+    }
+
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(DataBaseManager.CREATE_TABLE);

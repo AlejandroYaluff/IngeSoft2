@@ -22,7 +22,7 @@
 
         <activity android:name=".DbHelper" />
         <activity android:name=".MainActivity" />
-        <activity android:name=".VacunasActivity"></activity>
+        <activity android:name=".VacunasActivity" />
         <activity android:name=".splash_screen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -30,7 +30,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".DesplegarActivity"></activity>
+        <activity android:name=".DesplegarActivity" />
+        <activity android:name=".Notificacion"></activity>
     </application>
 
 </manifest>

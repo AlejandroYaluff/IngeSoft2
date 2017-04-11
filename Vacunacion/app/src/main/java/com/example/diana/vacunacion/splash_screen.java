@@ -45,15 +45,15 @@ public class splash_screen extends AppCompatActivity {
 
         ProgressDialog dialog;
         ArrayList<DataBaseManager> datos = new ArrayList<DataBaseManager>(Arrays.asList(
-                new DataBaseManager("Alejandro","12/06/1994","masculino"),
-                new DataBaseManager("Valeria","17/05/1996","femenino"),
-                new DataBaseManager("Beto","02/11/1999","masculino")
+                new DataBaseManager("Alejandro","1994-06-12","masculino"),
+                new DataBaseManager("Valeria","1996-05-17","femenino"),
+                new DataBaseManager("Beto","1999-11-02","masculino")
         ));
         ArrayList<Vacunas> datosVacunas = new ArrayList<>(Arrays.asList(
-                new Vacunas("Tuberculosis","13/06/2015","SI APLICADA",1),
-                new Vacunas("Pentabalente","13/08/2015","SI APLICADA",1),
-                new Vacunas("Influenza 1ra","18/06/2017","NO APLICADA",3),
-                new Vacunas("IPV","11/02/2016","NO APLICADA",2)
+                new Vacunas("Tuberculosis","2017-04-12","SI APLICADA",1),
+                new Vacunas("Pentabalente","2015-08-13","SI APLICADA",1),
+                new Vacunas("Influenza 1ra","2017-06-05","NO APLICADA",3),
+                new Vacunas("IPV","2016-04-12","NO APLICADA",2)
         ));
 
         @Override
