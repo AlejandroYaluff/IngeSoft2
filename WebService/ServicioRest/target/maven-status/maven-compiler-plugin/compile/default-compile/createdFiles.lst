@@ -1,0 +1,6 @@
+com\ServicioRest\servicio\UsuarioRest.class
+com\ServicioRest\servicio\ApplicationConfig.class
+com\ServicioRest\entities\Usuarios.class
+com\ServicioRest\entities\Usuarios_.class
+com\ServicioRest\sessions\UsuariosFacade.class
+com\ServicioRest\sessions\AbstractFacade.class
