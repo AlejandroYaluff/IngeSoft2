@@ -4,11 +4,16 @@
 package com.ServicioRest.servicio;
 
 import com.ServicioRest.entities.Usuarios;
+import com.ServicioRest.sessions.AbstractFacade;
 import com.ServicioRest.sessions.UsuariosFacade;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
+import javax.persistence.TypedQuery;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import static javax.ws.rs.HttpMethod.PUT;
 import javax.ws.rs.POST;
@@ -16,16 +21,27 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.persistence.EntityManager;
+import javax.persistence.Persistence;
 
 /**
  *
  * 
  */
+@javax.ejb.Stateless
 @Path("usuario")
-public class UsuarioRest {
+public class UsuarioRest extends AbstractFacade<Usuarios> {
+  
+    private EntityManager em;
+    
     @EJB
     private UsuariosFacade ejbUsuariosFacade;
+    
+    public UsuarioRest() {
+        super(Usuarios.class);
+    }
     
     @GET
     @Produces({MediaType.APPLICATION_JSON})
@@ -60,5 +76,19 @@ public class UsuarioRest {
         return ejbUsuariosFacade.find(id);
     }
     
-}
+    @Override
+    protected EntityManager getEntityManager() {
+        em = Persistence.createEntityManagerFactory("com.mycompany_ServicioRest_war_1.0-SNAPSHOTPU").createEntityManager();
+        return em;
+    }
+    
+    @POST
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Path("/validarCorreo")
+    @Produces({MediaType.APPLICATION_JSON})
+    public String findbyEmail(String correo) throws IOException {
+        return super.validarCorreo(correo);
+    }
+    
+} 
 
