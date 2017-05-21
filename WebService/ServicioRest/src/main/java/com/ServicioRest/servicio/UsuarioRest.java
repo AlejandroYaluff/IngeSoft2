@@ -44,12 +44,14 @@ public class UsuarioRest extends AbstractFacade<Usuarios> {
     }
     
     @GET
+    @Path("/getusuarios")
     @Produces({MediaType.APPLICATION_JSON})
     public List<Usuarios>findALL() {
         return ejbUsuariosFacade.findAll();
     }
     
     @POST
+    @Path("/addusuario")
     @Consumes({MediaType.APPLICATION_JSON})
     public void create(Usuarios usuario) {
         ejbUsuariosFacade.create(usuario);
@@ -57,21 +59,21 @@ public class UsuarioRest extends AbstractFacade<Usuarios> {
     
     @PUT
     @Consumes({MediaType.APPLICATION_JSON})
-    @Path("{id}")
+    @Path("/editusuario/{id}")
     public void edit(@PathParam("id")Integer id, Usuarios usuario) {
         ejbUsuariosFacade.edit(usuario);
     }
     
     @DELETE
     @Consumes({MediaType.APPLICATION_JSON})
-    @Path("{id}")
+    @Path("/deleteusuario/{id}")
     public void remove(@PathParam("id")Integer id) {
         ejbUsuariosFacade.remove(ejbUsuariosFacade.find(id));
     }
     
     @GET
     @Produces({MediaType.APPLICATION_JSON})
-    @Path("{id}")
+    @Path("/getusuariobyid/{id}")
     public Usuarios findById (@PathParam("id")Integer id) {
         return ejbUsuariosFacade.find(id);
     }
@@ -82,13 +84,14 @@ public class UsuarioRest extends AbstractFacade<Usuarios> {
         return em;
     }
     
-    @POST
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Path("/validarCorreo")
-    @Produces({MediaType.APPLICATION_JSON})
-    public String findbyEmail(String correo) throws IOException {
-        return super.validarCorreo(correo);
+    @GET
+    @Produces({MediaType.TEXT_PLAIN})
+    @Path("/validarusuario")
+    public String validarusuario (@QueryParam("correo") String correo) throws IOException {
+        String valido = ejbUsuariosFacade.validarcorreo(correo);
+        return valido;
     }
+    
     
 } 
 

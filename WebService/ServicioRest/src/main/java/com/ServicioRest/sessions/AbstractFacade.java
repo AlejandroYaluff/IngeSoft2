@@ -3,6 +3,7 @@
  */
 package com.ServicioRest.sessions;
 
+import com.ServicioRest.entities.Hijos;
 import com.ServicioRest.entities.Usuarios;
 import static com.ServicioRest.entities.Usuarios_.correo;
 import java.io.IOException;
@@ -14,10 +15,12 @@ import java.util.Set;
 import javax.faces.validator.Validator;
 import javax.json.JsonObject;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.Query;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.ValidatorFactory;
-import org.json.simple.JSONObject;
+
 
 /**
  *
@@ -33,20 +36,22 @@ public abstract class AbstractFacade<T> {
 
     protected abstract EntityManager getEntityManager();
     
-    public String validarCorreo (String correo) throws IOException {
-        JSONObject objeto = new JSONObject();
-        boolean validado = getEntityManager().createNativeQuery("SELECT u FROM Usuarios u WHERE u.correo = '" + correo + "'").getResultList().isEmpty();
-        if (validado) {
-            objeto.put("correoValidado", false);
-        } else {
-            objeto.put("correoValidado", true);
+    public String validarcorreo (String correo) throws IOException {
+        
+        String validado;
+        try {
+            getEntityManager().createNativeQuery("SELECT u.id FROM Usuarios u WHERE u.correo = '"+correo+"'").getSingleResult().toString();
+            validado = "true";
+        } catch (NoResultException e) {
+            validado = "false";
         }
-        StringWriter salida = new StringWriter();
-        objeto.writeJSONString(salida);
+        return validado;
         
-        String texto = salida.toString();
-        return texto;
-        
+    }
+    
+    public String obtenerlistahijos(Integer idpadre) {
+          
+        return getEntityManager().createNativeQuery("SELECT to_json(h.*) FROM Hijos h WHERE h.idpadre = '"+idpadre+"'").getResultList().toString();
     }
 
     public void create(T entity) {

@@ -22,6 +22,7 @@ public class ApplicationConfig extends Application {
     
     private void addRestResourceClasses(Set<Class<?>> resources) {
        
+        resources.add(com.ServicioRest.servicio.HijoRest.class);
         resources.add(com.ServicioRest.servicio.UsuarioRest.class);
     }
     
