@@ -8,9 +8,11 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.app.NotificationCompat;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -18,6 +20,13 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -54,12 +63,14 @@ public class MainActivity extends AppCompatActivity {
 
         lista = (ListView)findViewById(R.id.lista);
 
-        showNotes();
+        ObtenerHijos tarea = new ObtenerHijos();
+        tarea.execute();
+        //showNotes();
         llamarNotificacion();
 
     }
 
-    private void showNotes () {
+    /*private void showNotes () {
         db = new DbHelper(this);
         Cursor c = db.getDatos();
 
@@ -80,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
         lista.setAdapter(adaptador);
 
 
-    }
+    }*/
 
     private void notificacionFecha (String fecha, String vacuna) {
         NotificationCompat.Builder notificacion = new NotificationCompat.Builder(getBaseContext());
@@ -125,6 +136,60 @@ public class MainActivity extends AppCompatActivity {
                     notificacionFecha(fecha,vacuna);
                 }
             } while (c.moveToNext());
+        }
+
+    }
+
+    private class ObtenerHijos extends AsyncTask<String, Void, Void> {
+
+        List<String> item2 = new ArrayList<String>();
+        ListView lista;
+        public static final String ip="192.168.0.2";
+        public static final String url ="http://"+ip+":8080/ServicioRest/webresources/hijo/obtenerhijos/";
+        String nombre = "",sexo = "";
+        int edad;
+        int idpadre = 14;
+
+        @Override
+        protected Void doInBackground(String... params) {
+
+            Log.i("ConsultaHijos","doInBackground");
+            HttpClient httpClient = new DefaultHttpClient();
+            HttpGet get = new HttpGet(url + idpadre);
+            get.setHeader("content-type", "application/json");
+
+            try {
+                HttpResponse resp = httpClient.execute(get);
+                String respString = EntityUtils.toString(resp.getEntity());
+
+                JSONObject respJSON = new JSONObject(respString);
+                nombre = respJSON.getString("nombre");
+                sexo = respJSON.getString("sexo");
+                edad = respJSON.getInt("edad");
+                item2.add(nombre +" | "+ sexo +" | "+ edad);
+                //ArrayAdapter<String> adaptador = new ArrayAdapter<String>(MainActivity.this,android.R.layout.simple_list_item_1,item2);
+                //lista.setAdapter(adaptador);
+
+            }
+            catch (Exception ex) {
+                Log.e("ServicioRest", "Error", ex);
+                ex.printStackTrace();
+            }
+
+            return null;
+
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            Log.i("ServicioRest","onPostExecute");
+            ArrayAdapter<String> adaptador = new ArrayAdapter<String>(MainActivity.this,android.R.layout.simple_list_item_1,item2);
+            lista.setAdapter(adaptador);
+        }
+
+        @Override
+        protected void onPreExecute() {
+            Log.i("ServicioRest","onPreExecute");
         }
 
     }
