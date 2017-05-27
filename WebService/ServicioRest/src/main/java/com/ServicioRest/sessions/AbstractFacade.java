@@ -40,18 +40,21 @@ public abstract class AbstractFacade<T> {
         
         String validado;
         try {
-            getEntityManager().createNativeQuery("SELECT u.id FROM Usuarios u WHERE u.correo = '"+correo+"'").getSingleResult().toString();
-            validado = "true";
+            validado = getEntityManager().createNativeQuery("SELECT u.id FROM Usuarios u WHERE u.correo = '"+correo+"'").getSingleResult().toString();
+            
         } catch (NoResultException e) {
-            validado = "false";
+            validado = "novalido";
         }
         return validado;
         
     }
     
     public String obtenerlistahijos(Integer idpadre) {
-          
         return getEntityManager().createNativeQuery("SELECT to_json(h.*) FROM Hijos h WHERE h.idpadre = '"+idpadre+"'").getResultList().toString();
+    }
+    
+    public String obtenerlistavacunas(Integer idhijo) {
+        return getEntityManager().createNativeQuery("SELECT to_json(v.*) FROM Vacunas v WHERE v.idhijo = '"+idhijo+"'").getResultList().toString();
     }
 
     public void create(T entity) {

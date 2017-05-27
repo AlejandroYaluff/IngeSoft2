@@ -24,6 +24,7 @@ public class ApplicationConfig extends Application {
        
         resources.add(com.ServicioRest.servicio.HijoRest.class);
         resources.add(com.ServicioRest.servicio.UsuarioRest.class);
+        resources.add(com.ServicioRest.servicio.VacunaRest.class);
     }
     
 }
