@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -72,6 +73,8 @@ public class Proyecto extends AppCompatActivity implements GoogleApiClient.OnCon
     private void signIn() {
         Intent intent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
         startActivityForResult(intent,REQ_CODE);
+        //validar obtener = new validar();
+        //obtener.execute();
 
     }
 
@@ -150,10 +153,10 @@ public class Proyecto extends AppCompatActivity implements GoogleApiClient.OnCon
         public static final String ip="192.168.0.2";
         public static final String url ="http://"+ip+":8080/ServicioRest/webresources/usuario/validarusuario?correo=";
         private String id;
-        private boolean resu=true;
+        //private boolean resu=true;
         protected Boolean doInBackground(String... params) {
 
-            boolean resul = true;
+            boolean resul = false;
 
             HttpClient httpClient = new DefaultHttpClient();
             HttpGet del = new HttpGet(url + email);
@@ -169,33 +172,32 @@ public class Proyecto extends AppCompatActivity implements GoogleApiClient.OnCon
                     InputStream instream = response.getEntity().getContent();
                     BufferedReader r = new BufferedReader(new InputStreamReader(
                             instream), 8000);
-                    StringBuilder total = new StringBuilder();
+                    StringBuilder recibido = new StringBuilder();
                     String line;
                     while ((line = r.readLine()) != null) {
-                        total.append(line);
+                        recibido.append(line);
                     }
                     instream.close();
-                    String bufstring = total.toString();
-                    System.out.println(bufstring);
+                    id = recibido.toString();
 
-
-                    if (bufstring.equals("false")) {
-                        resul= false;
+                    if (!id.equals("novalido")) {
+                        resul= true;
                     }
-                    id = bufstring;
+
                 }
             } catch (Exception ex) {
-                //Log.e("ServicioRest", "Error!", ex);
-                resul = false;
+                Log.e("Servicio", "Ocurrio un error!!", ex);
+
             }
             //
             return resul;
         }
 
-        protected void onPostExecute(Boolean result) {
-            if (result) {
+        protected void onPostExecute(Boolean resul) {
+            if (resul) {
                 Intent intent = new Intent(Proyecto.this, MainActivity.class);
-                //intent.putExtra("id_usuario", id_usuario);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.putExtra("idpadre", id);
                 startActivity(intent);
             }else{
                 Toast toast1 = Toast.makeText(getApplicationContext(),

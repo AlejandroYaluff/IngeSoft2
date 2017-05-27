@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.app.NotificationCompat;
@@ -26,6 +27,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -39,22 +41,36 @@ public class MainActivity extends AppCompatActivity {
     List<String> item = null;
     private EditText caja;
     private Button vervacunas;
+    int idpadre;
+    String servidor="http://192.168.0.2:8080";
+    String linkService = servidor+"/ServicioRest/webresources/hijo/obtenerhijos/";
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        if (android.os.Build.VERSION.SDK_INT > 9) {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+        }
 
         caja = (EditText) findViewById(R.id.editText);
         vervacunas = (Button) findViewById(R.id.button2);
+
+        String datoidpadre = null;
+        Intent intent = getIntent();
+        Bundle extras = intent.getExtras();
+        if (extras != null) {
+            datoidpadre = (String)extras.get("idpadre");
+        }
 
         vervacunas.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(v.getContext(), DesplegarActivity.class);
                 String dato = caja.getText().toString();
-                intent.putExtra("id",dato);
+                intent.putExtra("idhijo",dato);
                 startActivity(intent);
 
 
@@ -63,10 +79,40 @@ public class MainActivity extends AppCompatActivity {
 
         lista = (ListView)findViewById(R.id.lista);
 
-        ObtenerHijos tarea = new ObtenerHijos();
-        tarea.execute();
+        //ObtenerHijos tarea = new ObtenerHijos();
+        //tarea.execute();
+        mostrarHijos(datoidpadre);
         //showNotes();
         llamarNotificacion();
+
+    }
+
+    private void mostrarHijos(String id) {
+
+        idpadre = Integer.parseInt(id);
+        item = new ArrayList<String>();
+        String nombre = "",sexo = "";
+        int idhijo,edad;
+        HttpClient httpClient = new DefaultHttpClient();
+        HttpGet del = new HttpGet(linkService + idpadre);
+        del.setHeader("content-type", "application/json");
+        try {
+            HttpResponse resp = httpClient.execute(del);
+            String respStr = EntityUtils.toString(resp.getEntity());
+            JSONArray datosJSON = new JSONArray(respStr);
+            for (int i = 0; i < datosJSON.length(); i++) {
+                JSONObject obj = datosJSON.getJSONObject(i);
+                idhijo = obj.getInt("id");
+                nombre = obj.getString("nombre");
+                sexo = obj.getString("sexo");
+                edad = obj.getInt("edad");
+                item.add(idhijo +" | "+ nombre +" | "+ sexo +" | "+ edad);
+            }
+            ArrayAdapter<String> adaptador = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, item);
+            lista.setAdapter(adaptador);
+        } catch (Exception ex) {
+            Log.e("Servicio", "Ocurrio un error!!", ex);
+        }
 
     }
 
@@ -140,7 +186,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private class ObtenerHijos extends AsyncTask<String, Void, Void> {
+    /*private class ObtenerHijos extends AsyncTask<String, Void, Void> {
 
         List<String> item2 = new ArrayList<String>();
         ListView lista;
@@ -192,5 +238,6 @@ public class MainActivity extends AppCompatActivity {
             Log.i("ServicioRest","onPreExecute");
         }
 
-    }
+    }*/
 }
+
