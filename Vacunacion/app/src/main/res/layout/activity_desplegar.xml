@@ -15,9 +15,34 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <TextView
+            android:text="Filtrar por:"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/textView3" />
+
+        <Spinner
+            android:layout_width="match_parent"
+            android:layout_height="63dp"
+            android:entries="@array/spinner_item2"
+            android:id="@+id/spinner2" />
+
+        <TextView
+            android:text="Ordenar por:"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/titulo" />
+
+        <Spinner
+            android:layout_width="match_parent"
+            android:layout_height="63dp"
+            android:entries="@array/spinner_item"
+            android:id="@+id/spinner" />
+
         <ListView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_centerInParent="true"
             android:id="@+id/lista2" />
     </LinearLayout>
 </RelativeLayout>

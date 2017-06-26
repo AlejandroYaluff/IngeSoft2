@@ -23,7 +23,6 @@
         <activity android:name=".DbHelper" />
         <activity android:name=".MainActivity" />
         <activity android:name=".VacunasActivity" />
-        <activity android:name=".splash_screen" />
         <activity android:name=".Proyecto">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

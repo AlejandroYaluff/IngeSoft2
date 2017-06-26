@@ -100,6 +100,8 @@ public class DbHelper extends SQLiteOpenHelper {
         return c;
     }
 
+
+
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(DataBaseManager.CREATE_TABLE);

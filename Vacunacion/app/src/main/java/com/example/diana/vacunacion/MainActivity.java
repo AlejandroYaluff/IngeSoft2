@@ -25,11 +25,17 @@ import android.widget.TextView;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -44,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
     int idpadre;
     String servidor="http://192.168.0.2:8080";
     String linkService = servidor+"/ServicioRest/webresources/hijo/obtenerhijos/";
+    String linkService2 = servidor+"/ServicioRest/webresources/vacuna/obtenerfecha";
 
 
     @Override
@@ -80,9 +87,10 @@ public class MainActivity extends AppCompatActivity {
         lista = (ListView)findViewById(R.id.lista);
 
         //ObtenerHijos tarea = new ObtenerHijos();
-        //tarea.execute();
-        mostrarHijos(datoidpadre);
-        //showNotes();
+        //tarea.execute(datoidpadre);
+        MostrarHijos tarea = new MostrarHijos();
+        tarea.execute(datoidpadre);
+
         llamarNotificacion();
 
     }
@@ -139,14 +147,14 @@ public class MainActivity extends AppCompatActivity {
 
     }*/
 
-    private void notificacionFecha (String fecha, String vacuna) {
+    private void notificacionFecha () {
         NotificationCompat.Builder notificacion = new NotificationCompat.Builder(getBaseContext());
         notificacion.setSmallIcon(android.R.drawable.ic_dialog_info);
 
         notificacion.setTicker("Informacion Vacunas");
         notificacion.setWhen(System.currentTimeMillis());
-        notificacion.setContentTitle(vacuna);
-        notificacion.setContentText(fecha);
+        notificacion.setContentTitle("vacunas");
+        notificacion.setContentText("notificacion");
         notificacion.setContentInfo("Se acerca fecha de vacunacion");
 
         Uri sonido = RingtoneManager.getDefaultUri(Notification.DEFAULT_SOUND);
@@ -167,7 +175,8 @@ public class MainActivity extends AppCompatActivity {
         nm.notify(1,n);
     }
 
-    private void llamarNotificacion () {
+    /*private void llamarNotificacion () {
+
         db = new DbHelper(this);
         Cursor c = db.getDatosNotificacion();
         String fecha = "",vacuna = "";
@@ -184,35 +193,120 @@ public class MainActivity extends AppCompatActivity {
             } while (c.moveToNext());
         }
 
+    }*/
+
+    /*private void insertarfilas () {
+
+
+        String nombre = "",fecha_aplicacion = "",aplicada = "";
+        int idhijo=0;
+        HttpClient httpClient = new DefaultHttpClient();
+        HttpGet del = new HttpGet(linkService2);
+        del.setHeader("content-type", "application/json");
+        try {
+            HttpResponse resp = httpClient.execute(del);
+            String respStr = EntityUtils.toString(resp.getEntity());
+            JSONArray datosJSON = new JSONArray(respStr);
+            for (int i = 0; i < datosJSON.length(); i++) {
+                JSONObject obj = datosJSON.getJSONObject(i);
+                nombre = obj.getString("nombre");
+                fecha_aplicacion = obj.getString("fecha_aplicacion");
+                aplicada = obj.getString("aplicada");
+                idhijo = obj.getInt("idhijo");
+                ArrayList<Vacunas> datosVacunas = new ArrayList<>(Arrays.asList(
+                        new Vacunas(nombre,fecha_aplicacion,aplicada,idhijo)
+                ));
+            }
+            for (int i = 0 ; i<datosVacunas.size() ; i++) {
+                Vacunas dat2 = new Vacunas();
+                dat2 = datosVacunas.get(i);
+                helper.insertarVacunas(dat2);
+
+            }
+
+        } catch (Exception ex) {
+            Log.e("Servicio", "Ocurrio un error!!", ex);
+        }
+    }*/
+
+    private void llamarNotificacion () {
+        String dias;
+        HttpClient httpClient = new DefaultHttpClient();
+        HttpGet del = new HttpGet(linkService2);
+        del.setHeader("content-type", "application/json");
+        try {
+            HttpResponse resp = httpClient.execute(del);
+            //String respStr = EntityUtils.toString(resp.getEntity());
+            InputStream instream = resp.getEntity().getContent();
+            BufferedReader r = new BufferedReader(new InputStreamReader(
+                    instream), 8000);
+            StringBuilder recibido = new StringBuilder();
+            String line;
+            while ((line = r.readLine()) != null) {
+                recibido.append(line);
+            }
+            instream.close();
+            dias = recibido.toString();
+
+            List<String> listadias = new ArrayList<String>(Arrays.asList(dias.split(",")));
+            for(int x=0;x<listadias.size();x++) {
+                float p = Float.parseFloat(listadias.get(x));
+                System.out.println(p);
+                if (p == 2) {
+                    System.out.println(p);
+                    notificacionFecha();
+                }
+
+            }
+
+
+        } catch (Exception ex) {
+            Log.e("Servicio", "Ocurrio un error!!", ex);
+        }
     }
 
-    /*private class ObtenerHijos extends AsyncTask<String, Void, Void> {
+
+
+    private class MostrarHijos extends AsyncTask<String, Void, Void> {
 
         List<String> item2 = new ArrayList<String>();
-        ListView lista;
+        //ListView lista;
         public static final String ip="192.168.0.2";
-        public static final String url ="http://"+ip+":8080/ServicioRest/webresources/hijo/obtenerhijos/";
+        public static final String url ="http://"+ip+":8080/ServicioRest/webresources/hijo/obtenerhijos";
         String nombre = "",sexo = "";
         int edad;
-        int idpadre = 14;
+        int idpadre,idhijo;
 
         @Override
         protected Void doInBackground(String... params) {
 
+            idpadre = Integer.parseInt(params[0]);
             Log.i("ConsultaHijos","doInBackground");
-            HttpClient httpClient = new DefaultHttpClient();
-            HttpGet get = new HttpGet(url + idpadre);
-            get.setHeader("content-type", "application/json");
 
+            //HttpGet get = new HttpGet(url);
+            //get.setHeader("content-type", "application/json");
+            JSONObject jsonParam = new JSONObject();
             try {
-                HttpResponse resp = httpClient.execute(get);
-                String respString = EntityUtils.toString(resp.getEntity());
-
-                JSONObject respJSON = new JSONObject(respString);
-                nombre = respJSON.getString("nombre");
-                sexo = respJSON.getString("sexo");
-                edad = respJSON.getInt("edad");
-                item2.add(nombre +" | "+ sexo +" | "+ edad);
+                jsonParam.put("id", idpadre);
+                HttpClient httpClient = new DefaultHttpClient();
+                //HttpClient httpClient = new DefaultHttpClient();
+                HttpPost del = new HttpPost(url);
+                del.setHeader("Accept", "application/json");
+                del.setHeader("Content-type", "application/json");
+                StringEntity se = new StringEntity(jsonParam.toString());
+                del.setEntity(se);
+                //
+                HttpResponse resp = httpClient.execute(del);
+                String respStr = EntityUtils.toString(resp.getEntity());
+                JSONArray respJSON = new JSONArray(respStr);
+                for (int i = 0; i <respJSON.length(); i++) {
+                    JSONObject obj = respJSON.getJSONObject(i);
+                    idhijo = obj.getInt("id");
+                    nombre = obj.getString("nombre");
+                    sexo = obj.getString("sexo");
+                    edad = obj.getInt("edad");
+                    item2.add(idhijo + " | " + nombre + " | " + sexo + " | " + edad);
+                }
                 //ArrayAdapter<String> adaptador = new ArrayAdapter<String>(MainActivity.this,android.R.layout.simple_list_item_1,item2);
                 //lista.setAdapter(adaptador);
 
@@ -238,6 +332,9 @@ public class MainActivity extends AppCompatActivity {
             Log.i("ServicioRest","onPreExecute");
         }
 
-    }*/
+    }
+
+
+
 }
 

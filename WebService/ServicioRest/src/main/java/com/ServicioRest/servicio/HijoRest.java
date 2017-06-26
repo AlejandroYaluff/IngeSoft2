@@ -10,8 +10,11 @@ package com.ServicioRest.servicio;
  * 
  */
 import com.ServicioRest.entities.Hijos;
+import com.ServicioRest.entities.Usuarios;
 import com.ServicioRest.sessions.AbstractFacade;
 import com.ServicioRest.sessions.HijosFacade;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -94,6 +97,19 @@ public class HijoRest extends AbstractFacade<Hijos> {
     public String obtenerhijos(@PathParam("idpadre") Integer idpadre) {
         //return super.obtenerlistahijos(idpadre);
         return ejbHijosFacade.obtenerlistahijos(idpadre);
+    }
+    
+    @POST
+    @Path("/obtenerhijos")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    public ArrayList<Hijos> obtenerhijos(Usuarios usuario) throws ClassNotFoundException, SQLException{
+        
+        ArrayList<Hijos> hijos = new ArrayList();
+        hijos = ejbHijosFacade.obtenerhijos(usuario.getId());
+        //super.validateuser(usuario.getCorreo());
+        //return super.validateuser("sara@hotmail.com");
+        return hijos;
     }
     
 }

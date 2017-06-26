@@ -25,8 +25,11 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -39,6 +42,7 @@ public class Proyecto extends AppCompatActivity implements GoogleApiClient.OnCon
     private GoogleApiClient googleApiClient;
     private static final int REQ_CODE = 9001;
     String email;
+    public static final String servidor="http://192.168.0.2:8080";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -148,7 +152,7 @@ public class Proyecto extends AppCompatActivity implements GoogleApiClient.OnCon
         googleApiClient.disconnect();
     }
 
-    private class validar extends AsyncTask<String,Integer,Boolean> {
+    /*private class validar extends AsyncTask<String,Integer,Boolean> {
 
         public static final String ip="192.168.0.2";
         public static final String url ="http://"+ip+":8080/ServicioRest/webresources/usuario/validarusuario?correo=";
@@ -205,7 +209,56 @@ public class Proyecto extends AppCompatActivity implements GoogleApiClient.OnCon
                 toast1.show();
             }
         }
+    }*/
+
+    private class validar extends AsyncTask<String,Integer,Boolean> {
+
+        static final String linkService =servidor+"/ServicioRest/webresources/usuario/isuser";
+        private int id_usuario;
+        private String id_usu;
+        protected Boolean doInBackground(String... params) {
+            JSONObject jsonParam = new JSONObject();
+            boolean resultado = false;
+            try {
+                jsonParam.put("correo", email);
+                HttpClient httpClient = new DefaultHttpClient();
+                HttpPost del = new HttpPost(linkService);
+                del.setHeader("Accept", "application/json");
+                del.setHeader("Content-type", "application/json");
+                StringEntity se = new StringEntity(jsonParam.toString());
+                del.setEntity(se);
+                //
+                HttpResponse resp = httpClient.execute(del);
+                String respStr = EntityUtils.toString(resp.getEntity());
+                JSONObject obj = new JSONObject(respStr);
+                if (obj != null) {
+                    id_usuario = obj.getInt("id");
+                    resultado = true;
+                }
+                else {
+                    resultado = false;
+                }
+            } catch (Exception ex) {
+                Log.e("ServicioRest", "Error!", ex);
+            }
+            return resultado;
+        }
+
+        protected void onPostExecute(Boolean resultado) {
+            if (resultado) {
+                id_usu = Integer.toString(id_usuario);
+                Intent intent = new Intent(Proyecto.this, MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.putExtra("idpadre", id_usu);
+                startActivity(intent);
+            }else{
+                Toast toast1 = Toast.makeText(getApplicationContext(),
+                        "Usuario No Registrado", Toast.LENGTH_SHORT);
+                toast1.show();
+            }
+        }
     }
+
 }
 
 

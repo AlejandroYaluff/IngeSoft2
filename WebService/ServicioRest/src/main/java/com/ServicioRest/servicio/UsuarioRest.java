@@ -7,6 +7,7 @@ import com.ServicioRest.entities.Usuarios;
 import com.ServicioRest.sessions.AbstractFacade;
 import com.ServicioRest.sessions.UsuariosFacade;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
@@ -90,6 +91,18 @@ public class UsuarioRest extends AbstractFacade<Usuarios> {
     public String validarusuario (@QueryParam("correo") String correo) throws IOException {
         String valido = ejbUsuariosFacade.validarcorreo(correo);
         return valido;
+    }
+    
+    @POST
+    @Path("/isuser")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    public Usuarios validate(Usuarios usuario) throws ClassNotFoundException, SQLException {
+        Usuarios usu = new Usuarios();
+        usu = ejbUsuariosFacade.validateuser(usuario.getCorreo());
+        //super.validateuser(usuario.getCorreo());
+        //return super.validateuser("sara@hotmail.com");
+        return usu;
     }
     
     
