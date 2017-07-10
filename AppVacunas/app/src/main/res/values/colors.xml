@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#37474f</color>
+    <color name="colorAccent">#FF4081</color>
+
+    <color name="blue_grey_500">#607d8b</color>
+    <color name="blue_grey_600">#546e7a</color>
+    <color name="blue_grey_700">#455A64</color>
+    <color name="blue_grey_800">#37474F</color>
+    <color name="blue_grey_900">#263238</color>
+    <color name="gris">#bcbcbc</color>
+    <color name="gris_medio">#bcbcbc</color>
+    <color name="gris_claro">#d9d9d9</color>
+    <color name="gris_oscuro">#747474</color>
+
+    <color name="blanco">#ffffff</color>
+    <color name="naranja_claro">#ff9d2d</color>
+    <color name="naranja_oscuro">#db8a2f</color>
+    <color name="naranja_medio">#ff8800</color>
+
+    <color name="amarillo">#FFFF00</color>
+    <color name="fuchsia">#FF00FF</color>
+    <color name="rojo">#FF0000</color>
+    <color name="plata">#C0C0C0</color>
+
+    <color name="verde_oliva">#808000</color>
+    <color name="morado">#800080</color>
+    <color name="marron">#800000</color>
+    <color name="agua">#00FFFF</color>
+    <color name="lima">#00FF00</color>
+    <color name="teal">#008080</color>
+    <color name="verde">#008000</color>
+    <color name="azul">#0000FF</color>
+    <color name="azulclaro">#FFAEE4E8</color>
+    <color name="navy">#000080</color>
+    <color name="negro">#000000</color>
+    <color name="marfil">#FFFFF0</color>
+    <color name="dorado">#eee8aa</color>
+</resources>
